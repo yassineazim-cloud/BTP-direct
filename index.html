@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BTP Direct Chantiers</title>
+<meta name="description" content="Tous les chantiers du Maroc au même endroit : qui construit quoi, où et avec qui. Maîtres d'ouvrage, architectes, bureaux d'études et entreprises.">
+<meta property="og:title" content="BTP Direct · Chantiers du Maroc">
+<meta property="og:description" content="Qui construit quoi, où et avec qui. Chaque chantier est vérifié et sourcé.">
+<meta property="og:image" content="logo.webp">
+<link rel="icon" href="logo.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#/">
+      <img src="logo.webp" alt="Logo BTP Direct" width="42" height="42">
+      <span><span class="wm"><span class="wm-btp">BTP</span><span class="wm-dir">DIRECT</span></span><span class="wm-sub">Chantiers du Maroc</span></span>
+    </a>
+    <nav class="main" id="nav">
+      <a href="#/" data-r="home">Accueil</a>
+      <a href="#/chantiers" data-r="chantiers">Tous les chantiers</a>
+      <a href="#/villes" data-r="villes">Villes</a>
+      <a href="#/entreprises" data-r="entreprises">Entreprises</a>
+      <a href="#/admin" data-r="admin" id="navAdmin" hidden>Modération</a>
+    </nav>
+    <div class="top-act">
+      <a class="btn hide-sm" href="#/" onclick="openPlans();return false">Abonnement Pro</a>
+      <a class="btn primary" href="#/signaler"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg><span>Signaler un chantier</span></a>
+      <button class="btn menu-btn" aria-label="Menu" onclick="document.getElementById('nav').classList.toggle('open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<main id="app"><div class="loading"><div class="spin"></div>Chargement des chantiers…</div></main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <div class="brand" style="color:#fff;margin-bottom:10px"><img src="logo.webp" alt="" width="42" height="42"><span class="wm"><span class="wm-btp" style="color:#fff">BTP</span><span class="wm-dir">DIRECT</span></span></div>
+      <p style="margin:0;max-width:320px">La référence des chantiers au Maroc. Chaque fiche est vérifiée par notre équipe avant publication, avec sa source.</p>
+    </div>
+    <div><h4>Explorer</h4><a href="#/chantiers">Tous les chantiers</a><a href="#/villes">Par ville</a><a href="#/entreprises">Entreprises</a></div>
+    <div><h4>Contribuer</h4><a href="#/signaler">Signaler un chantier</a><a href="#/signaler" id="ftWa">Envoyer via WhatsApp</a><a href="#/" onclick="openPub();return false">Annoncer sur BTP Direct</a></div>
+    <div><h4>Communauté</h4><a href="#/" id="ftLiP" target="_blank" rel="noopener">LinkedIn · 26 k abonnés</a><a href="#/" id="ftLiPage" target="_blank" rel="noopener">Page BTP Direct · 10 k</a><a href="#/" onclick="openPlans();return false">Abonnement Pro</a></div>
+    <div class="copy">© <span id="yr"></span> BTP Direct · Informations issues de sources publiques et de la communauté, vérifiées avant publication. · <a href="#/admin" style="display:inline;color:#9fb2d4">Espace équipe</a></div>
+  </div>
+</footer>
+
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="modal-c" id="modalC"></div></div>
+<div class="lb" id="lb"><button class="lx" onclick="closeLb()" aria-label="Fermer">×</button><button class="lp" onclick="lbGo(-1)" aria-label="Précédente">‹</button><img id="lbImg" alt=""><button class="ln" onclick="lbGo(1)" aria-label="Suivante">›</button><div class="lc" id="lbC"></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
