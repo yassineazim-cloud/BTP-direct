@@ -28,10 +28,9 @@
       <a href="#/villes" data-r="villes">Villes</a>
       <a href="#/entreprises" data-r="entreprises">Entreprises</a>
       <a href="#/admin" data-r="admin" id="navAdmin" hidden>Modération</a>
+      <a href="#/" id="navOut" class="nav-sm" hidden onclick="logout();return false">Se déconnecter</a>
     </nav>
-    <div class="top-act">
-      <a class="btn hide-sm" href="#/" onclick="openPlans();return false">Abonnement Pro</a>
-      <a class="btn primary" href="#/signaler"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg><span>Signaler un chantier</span></a>
+    <div class="top-act" id="topAct">
       <button class="btn menu-btn" aria-label="Menu" onclick="document.getElementById('nav').classList.toggle('open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     </div>
   </div>
@@ -45,9 +44,9 @@
       <div class="brand" style="color:#fff;margin-bottom:10px"><img src="logo.webp" alt="" width="42" height="42"><span class="wm"><span class="wm-btp" style="color:#fff">BTP</span><span class="wm-dir">DIRECT</span></span></div>
       <p style="margin:0;max-width:320px">La référence des chantiers au Maroc. Chaque fiche est vérifiée par notre équipe avant publication, avec sa source.</p>
     </div>
-    <div><h4>Explorer</h4><a href="#/chantiers">Tous les chantiers</a><a href="#/villes">Par ville</a><a href="#/entreprises">Entreprises</a></div>
-    <div><h4>Contribuer</h4><a href="#/signaler">Signaler un chantier</a><a href="#/signaler" id="ftWa">Envoyer via WhatsApp</a><a href="#/" onclick="openPub();return false">Annoncer sur BTP Direct</a></div>
-    <div><h4>Communauté</h4><a href="#/" id="ftLiP" target="_blank" rel="noopener">LinkedIn · 26 k abonnés</a><a href="#/" id="ftLiPage" target="_blank" rel="noopener">Page BTP Direct · 10 k</a><a href="#/" onclick="openPlans();return false">Abonnement Pro</a></div>
+    <div class="acc-only" hidden><h4>Explorer</h4><a href="#/chantiers">Tous les chantiers</a><a href="#/villes">Par ville</a><a href="#/entreprises">Entreprises</a></div>
+    <div class="acc-only" hidden><h4>Contribuer</h4><a href="#/signaler">Signaler un chantier</a><a href="#/signaler" id="ftWa">Envoyer via WhatsApp</a><a href="#/" onclick="openPub();return false">Annoncer sur BTP Direct</a></div>
+    <div><h4>Communauté</h4><a href="#/" id="ftLiP" target="_blank" rel="noopener">LinkedIn · 26 k abonnés</a><a href="#/" id="ftLiPage" target="_blank" rel="noopener">Page BTP Direct · 10 k</a><a href="#/" class="acc-only" hidden onclick="openPlans();return false">Abonnement Pro</a></div>
     <div class="copy">© <span id="yr"></span> BTP Direct · Informations issues de sources publiques et de la communauté, vérifiées avant publication. · <a href="#/admin" style="display:inline;color:#9fb2d4">Espace équipe</a></div>
   </div>
 </footer>
