@@ -636,14 +636,14 @@ function vNotFound(){return `<div class="wrap"><div class="empty" style="margin:
 function vBientot(){
   const li=CFG.LINKEDIN_PAGE||CFG.LINKEDIN_PROFIL;
   return `<section class="hero"><div class="wrap" style="grid-template-columns:1fr;text-align:center;padding-top:80px;padding-bottom:90px">
-   <div style="max-width:700px;margin:0 auto"><h1>Tous les chantiers du Maroc, <em>au même endroit.</em></h1>
-   <p class="lead" style="margin-left:auto;margin-right:auto">La plateforme des professionnels du BTP au Maroc. L'accès est réservé aux membres inscrits : chaque inscription est vérifiée par l'équipe BTP Direct.</p>
+   <div style="max-width:700px;margin:0 auto"><h1>La communauté <em>BTP, construction et architecture</em> du Maroc.</h1>
+   <p class="lead" style="margin-left:auto;margin-right:auto">Plus qu'une plateforme : une communauté de professionnels qui partagent les chantiers du Maroc, qui construit quoi, où et avec qui. L'accès est réservé aux membres : chaque inscription est vérifiée par l'équipe BTP Direct.</p>
    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><a class="btn primary lg" href="#/inscription">Inscrivez-vous pour y accéder</a><a class="btn lg" style="background:#fff;color:#0e3468;border-color:#fff" href="#/connexion">J'ai déjà un compte</a>${li?`<a class="btn lg" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4)" href="${esc(li)}" target="_blank" rel="noopener">Suivre sur LinkedIn</a>`:""}</div></div>
   </div></section>
   <section class="blk" id="acces"><div class="wrap"><div class="form-wrap">
    <form class="form" id="insForm" onsubmit="doSignup(event)">
-    <h2 style="font-size:24px">Créer votre compte</h2>
-    <p class="muted" style="margin:0 0 18px">Remplissez ce formulaire. Notre équipe valide votre accès, en général sous 24 h.</p>
+    <h2 style="font-size:24px">Rejoindre la communauté</h2>
+    <p class="muted" style="margin:0 0 18px">Architectes, ingénieurs, entreprises, promoteurs, fournisseurs : remplissez ce formulaire. Notre équipe valide votre adhésion sous 48 h maximum.</p>
     <div id="insErr"></div>
     <div class="row">
      <div class="field"><label for="iNom">Nom et prénom</label><input id="iNom" required minlength="2" maxlength="200" autocomplete="name"></div>
@@ -652,40 +652,43 @@ function vBientot(){
      <div class="field"><label for="iMail">E-mail</label><input id="iMail" type="email" required maxlength="200" autocomplete="email"></div>
      <div class="field"><label for="iProf">Vous êtes</label><select id="iProf" required><option value="">Choisir…</option>${PROFILS.map(x=>`<option>${esc(x)}</option>`).join("")}</select></div>
      <div class="field"><label for="iVille">Votre ville</label><select id="iVille"><option value="">Choisir…</option>${Object.entries(VILLES).map(([k,c])=>`<option value="${k}">${esc(c.n)}</option>`).join("")}<option value="autre">Autre ville</option></select></div>
+     <div class="field" style="grid-column:1/-1"><label for="iLi">Lien de votre profil LinkedIn <span class="hint">(pour vérifier votre profil)</span></label><input id="iLi" type="text" inputmode="url" autocapitalize="off" required maxlength="300" placeholder="https://www.linkedin.com/in/votre-nom"></div>
      <div class="field"><label for="iPwd">Mot de passe <span class="hint">(8 caractères minimum)</span></label><input id="iPwd" type="password" required minlength="8" autocomplete="new-password"></div>
      <div class="field"><label for="iPwd2">Confirmez le mot de passe</label><input id="iPwd2" type="password" required minlength="8" autocomplete="new-password"></div>
     </div>
     <div class="field"><span class="lab">Ce qui vous intéresse</span><div class="radios">${INTERETS.map(x=>`<label><input type="checkbox" name="iInt" value="${esc(x)}">${esc(x)}</label>`).join("")}</div></div>
     <label class="check"><input type="checkbox" id="iOk" required>J'accepte d'être contacté par BTP Direct au sujet de mon inscription.</label>
-    <button class="btn primary lg" style="width:100%" id="iBtn">Créer mon compte</button>
+    <button class="btn primary lg" style="width:100%" id="iBtn">Rejoindre la communauté</button>
     <p class="fine">Déjà inscrit ? <a href="#/connexion" style="color:var(--accent);font-weight:600">Se connecter</a></p>
    </form>
-   <aside><div class="side-box"><h3>Ce que vous aurez</h3><ol class="steps"><li><span class="n">1</span><div><b>La carte des chantiers</b><span class="muted">Qui construit quoi, où, avec quels intervenants.</span></div></li><li><span class="n">2</span><div><b>Les appels d'offres</b><span class="muted">Par ville et par type de projet.</span></div></li><li><span class="n">3</span><div><b>Les bons contacts</b><span class="muted">Maîtres d'ouvrage, architectes, entreprises.</span></div></li></ol></div></aside>
+   <aside><div class="side-box"><h3>Dans la communauté</h3><ol class="steps"><li><span class="n">1</span><div><b>Les chantiers du Maroc</b><span class="muted">Qui construit quoi, où, avec quels intervenants. Les appels d'offres par ville.</span></div></li><li><span class="n">2</span><div><b>Les acteurs du secteur</b><span class="muted">Maîtres d'ouvrage, architectes, bureaux d'études, entreprises, fournisseurs.</span></div></li><li><span class="n">3</span><div><b>Échanger entre pros</b><span class="muted">Aimez, commentez et partagez les chantiers, signalez-en de nouveaux.</span></div></li></ol></div></aside>
   </div></div></section>`;
 }
 async function doSignup(e){
   e.preventDefault();
   const g=id=>$(id).value.trim()||null;
+  let li=$("#iLi").value.trim();if(li&&!/^https?:\/\//i.test(li))li="https://"+li;li=li.replace(/^http:/i,"https:");
+  if(!/^https:\/\/([a-z]{2,3}\.)?linkedin\.com\/(in|company|pub)\/[^\s]+/i.test(li)){$("#insErr").innerHTML='<div class="err">Indiquez le lien de votre profil LinkedIn, par exemple https://www.linkedin.com/in/votre-nom (sur LinkedIn : votre photo › Voir le profil, puis copiez l\'adresse).</div>';$("#insErr").scrollIntoView({block:"center"});return}
   if($("#iPwd").value!==$("#iPwd2").value){$("#insErr").innerHTML='<div class="err">Les deux mots de passe ne sont pas identiques.</div>';$("#insErr").scrollIntoView({block:"center"});return}
   const btn=$("#iBtn");btn.disabled=true;btn.textContent="Création du compte…";$("#insErr").innerHTML="";
   const v=$("#iVille").value;
-  const meta={nom:g("#iNom"),societe:g("#iSoc"),telephone:g("#iTel"),profil:$("#iProf").value,
+  const meta={linkedin:li,nom:g("#iNom"),societe:g("#iSoc"),telephone:g("#iTel"),profil:$("#iProf").value,
     ville:v==="autre"?"Autre":(VILLES[v]?VILLES[v].n:null),interets:$$('input[name="iInt"]:checked').map(i=>i.value)};
   const {data,error}=await sb.auth.signUp({email:g("#iMail"),password:$("#iPwd").value,options:{data:meta,emailRedirectTo:location.href.split("#")[0]}});
   if(error){
     console.error(error);
     const m=/registered|already/i.test(error.message)?"Un compte existe déjà avec cet e-mail. <a href=\"#/connexion\">Connectez-vous</a>.":/password/i.test(error.message)?"Mot de passe trop simple : choisissez-en un plus long.":"L'inscription n'a pas abouti ("+esc(error.message)+"). Réessayez dans un instant.";
-    $("#insErr").innerHTML=`<div class="err">${m}</div>`;$("#insErr").scrollIntoView({block:"center"});btn.disabled=false;btn.textContent="Créer mon compte";return}
+    $("#insErr").innerHTML=`<div class="err">${m}</div>`;$("#insErr").scrollIntoView({block:"center"});btn.disabled=false;btn.textContent="Rejoindre la communauté";return}
   if(data.session){SESSION=data.session;await checkAdmin();await refresh();location.hash="#/";route();return}
-  $("#insForm").outerHTML=`<div class="form success"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h2 style="border:0;padding:0;margin:0;font-size:24px">Inscription reçue !</h2><p>Confirmez votre adresse e-mail grâce au lien que nous venons de vous envoyer. Notre équipe validera ensuite votre accès.</p></div>`;
+  $("#insForm").outerHTML=`<div class="form success"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h2 style="border:0;padding:0;margin:0;font-size:24px">Merci de rejoindre la communauté !</h2><p>Votre inscription est reçue et elle sera validée sous 48 h maximum. Reconnectez-vous pour vérifier : votre accès s'ouvre dès que votre compte est validé.</p></div>`;
 }
 function vAttente(){
   const ref=MEMBRE&&MEMBRE.statut==="refuse";
   const wa=waLink("Bonjour BTP Direct, je viens de m'inscrire sur la plateforme ("+(SESSION.user.email||"")+").");
   return `<div class="wrap"><div class="form success" style="max-width:620px;margin:48px auto">
    <div class="ic" style="${ref?"background:var(--ao-soft);color:var(--ao)":""}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">${ref?'<path d="M12 8v5M12 16.5v.5"/><circle cx="12" cy="12" r="9"/>':'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'}</svg></div>
-   <h2 style="border:0;padding:0;margin:0;font-size:26px">${ref?"Accès non validé":"Compte en attente de validation"}</h2>
-   <p>${ref?"Votre demande d'accès n'a pas été validée. Contactez-nous si vous pensez qu'il s'agit d'une erreur.":`Merci ${esc(MEMBRE&&MEMBRE.nom||"")} ! Votre inscription est bien enregistrée. Notre équipe vérifie votre profil et valide votre accès, en général sous 24 h. Revenez ensuite sur cette page.`}</p>
+   <h2 style="border:0;padding:0;margin:0;font-size:26px">${ref?"Accès non validé":"Votre inscription est reçue"}</h2>
+   <p>${ref?"Votre demande d'accès n'a pas été validée. Contactez-nous si vous pensez qu'il s'agit d'une erreur.":`Merci ${esc(MEMBRE&&MEMBRE.nom||"")} de rejoindre la communauté BTP Direct ! Votre inscription est reçue et elle sera validée sous 48 h maximum. Reconnectez-vous pour vérifier : votre accès s'ouvre automatiquement dès que votre compte est validé.`}</p>
    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn" onclick="recheck(this)">Vérifier à nouveau</button>${wa?`<a class="btn wa" href="${wa}" target="_blank" rel="noopener">${waI}Nous écrire</a>`:""}<button class="btn" onclick="logout()">Se déconnecter</button></div>
   </div></div>`;
 }
@@ -979,7 +982,8 @@ function vAdmMem(){
    ${L.length?`<div class="tbl-wrap"><table class="adm"><thead><tr><th>Personne</th><th>Contact</th><th class="hide-sm">Profil</th><th class="hide-sm">Inscrit le</th><th>Accès</th></tr></thead><tbody>
    ${L.map(x=>{const tel=(x.telephone||"").replace(/[^\d]/g,"").replace(/^0/,"212");
      const msg=encodeURIComponent("Bonjour "+(x.nom||"")+", votre accès à la plateforme BTP Direct est validé ! Connectez-vous ici : "+location.href.split("#")[0]+"#/connexion");
-     return `<tr><td><b>${esc(x.nom||"")}</b>${x.societe?`<br><small class="muted">${esc(x.societe)}</small>`:""}<br>${st[x.statut]||""}</td>
+     const li=/^https:\/\/([a-z]{2,3}\.)?linkedin\.com\//i.test(x.linkedin||"")?x.linkedin:"";
+     return `<tr><td><b>${esc(x.nom||"")}</b>${x.societe?`<br><small class="muted">${esc(x.societe)}</small>`:""}<br>${li?`<a href="${esc(li)}" target="_blank" rel="noopener nofollow" style="color:#0a66c2;font-weight:600;font-size:13px">Voir le profil LinkedIn ↗</a><br>`:'<small class="muted">Pas de LinkedIn</small><br>'}${st[x.statut]||""}</td>
      <td>${x.telephone?`<a href="https://wa.me/${tel}" target="_blank" rel="noopener">${esc(x.telephone)}</a>`:""}${x.email?`<br><a href="mailto:${esc(x.email)}">${esc(x.email)}</a>`:""}</td>
      <td class="hide-sm">${esc(x.profil||"")}<br><small class="muted">${esc(x.ville||"")}${(x.interets||[]).length?" · "+esc(x.interets.join(", ")):""}</small></td>
      <td class="hide-sm"><small>${esc(dateFr(x.created_at))}</small></td>
@@ -993,10 +997,10 @@ async function memStatut(uid,statut){
   const {error}=await sb.from("membres").update({statut,valide_le:statut==="valide"?new Date().toISOString():null}).eq("user_id",uid);
   if(error)return toast("Erreur : "+error.message);
   await loadAdmin();updateNav();route();
-  toast(statut==="valide"?"Accès validé. Cliquez sur « Prévenir » pour l'informer sur WhatsApp.":statut==="refuse"?"Inscription refusée":"Accès retiré");
+  toast(statut==="valide"?"Accès validé : la personne verra un message de bienvenue à sa prochaine connexion. Vous pouvez aussi la prévenir sur WhatsApp.":statut==="refuse"?"Inscription refusée":"Accès retiré");
 }
 function exportMem(){
-  const cols=[["Inscrit le","created_at"],["Statut","statut"],["Nom","nom"],["Société","societe"],["Téléphone","telephone"],["E-mail","email"],["Profil","profil"],["Ville","ville"],["Intérêts","interets"]];
+  const cols=[["Inscrit le","created_at"],["Statut","statut"],["Nom","nom"],["Société","societe"],["Téléphone","telephone"],["E-mail","email"],["Profil","profil"],["Ville","ville"],["Intérêts","interets"],["LinkedIn","linkedin"]];
   csvDownload(cols,ADM.mem||[],"btp-direct-membres");
 }
 function csvDownload(cols,list,name){
@@ -1077,6 +1081,13 @@ function route(){
   $$("nav.main a").forEach(x=>{if(x.dataset.r===navKey)x.setAttribute("aria-current","page");else x.removeAttribute("aria-current")});
   if(view!==lastView)window.scrollTo(0,0);
   lastView=view;
+  bienvenue();
+}
+function bienvenue(){
+  if(IS_ADMIN||!MEMBRE||MEMBRE.statut!=="valide")return;
+  const k="btp_bienvenue_"+MEMBRE.user_id;
+  try{if(localStorage.getItem(k))return;localStorage.setItem(k,"1")}catch(e){return}
+  openModal(`<div class="success" style="padding:16px 0 4px"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h2 style="padding:0">Votre compte est validé, bienvenue dans la communauté !</h2><p>Merci ${esc(MEMBRE.nom||"")} ! Vous faites maintenant partie de la communauté BTP Direct : les chantiers du Maroc, leurs intervenants, et des échanges entre professionnels du BTP, de la construction et de l'architecture. Aimez, commentez, partagez et signalez de nouveaux chantiers.</p><button class="btn primary lg" onclick="closeModal()">Découvrir les chantiers</button></div>`);
 }
 window.addEventListener("hashchange",route);
 
