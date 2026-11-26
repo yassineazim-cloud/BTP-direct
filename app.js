@@ -636,9 +636,10 @@ function vNotFound(){return `<div class="wrap"><div class="empty" style="margin:
 function vBientot(){
   const li=CFG.LINKEDIN_PAGE||CFG.LINKEDIN_PROFIL;
   return `<section class="hero"><div class="wrap" style="grid-template-columns:1fr;text-align:center;padding-top:80px;padding-bottom:90px">
-   <div style="max-width:700px;margin:0 auto"><h1>La communauté <em>BTP, construction et architecture</em> du Maroc.</h1>
-   <p class="lead" style="margin-left:auto;margin-right:auto">Plus qu'une plateforme : une communauté de professionnels qui partagent les chantiers du Maroc, qui construit quoi, où et avec qui. L'accès est réservé aux membres : chaque inscription est vérifiée par l'équipe BTP Direct.</p>
-   <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><a class="btn primary lg" href="#/inscription">Inscrivez-vous pour y accéder</a><a class="btn lg" style="background:#fff;color:#0e3468;border-color:#fff" href="#/connexion">J'ai déjà un compte</a>${li?`<a class="btn lg" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4)" href="${esc(li)}" target="_blank" rel="noopener">Suivre sur LinkedIn</a>`:""}</div></div>
+   <div style="max-width:700px;margin:0 auto"><h1>Tous les chantiers du Maroc, <em>au même endroit.</em></h1>
+   <p class="lead" style="margin-left:auto;margin-right:auto">Qui construit quoi, où et avec qui. L'accès est réservé aux membres : chaque inscription est vérifiée par l'équipe BTP Direct.</p>
+   <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><a class="btn primary lg" href="#/inscription">Inscrivez-vous pour y accéder</a><a class="btn lg" style="background:#fff;color:#0e3468;border-color:#fff" href="#/connexion">J'ai déjà un compte</a>${li?`<a class="btn lg" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4)" href="${esc(li)}" target="_blank" rel="noopener">Suivre sur LinkedIn</a>`:""}</div>
+   <p style="margin:22px 0 0;color:#cfdaee;font-size:14px">Plus qu'une plateforme : une communauté du BTP, de la construction et de l'architecture.</p></div>
   </div></section>
   <section class="blk" id="acces"><div class="wrap"><div class="form-wrap">
    <form class="form" id="insForm" onsubmit="doSignup(event)">
