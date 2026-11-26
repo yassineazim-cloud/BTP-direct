@@ -585,7 +585,7 @@ function openPub(){openModal(`<h2>Annoncer sur BTP Direct</h2><p>Mettez votre ma
 function openCorrection(cid,ajout){const c=CH.find(x=>x.id===cid);openModal(`<h2>${ajout?"Ajouter votre société":"Proposer une correction"}</h2><p>Chantier : « ${esc(c.nom)} ».</p>`+demandeForm({type:"correction",chantier_id:cid,fields:["nom","societe","telephone","email","message"],msgRequired:true,msgLabel:ajout?"Votre rôle sur ce chantier":"Qu'est-ce qui est inexact ?",btn:"Envoyer",ok:"Merci, votre message a été transmis à l'équipe."}))}
 function openClaim(coid){openModal(`<h2>Revendiquer ce profil</h2><p>${esc(CO[coid].n)} : l'équipe vérifie que vous représentez bien la société puis vous donne la main sur le profil.</p>`+demandeForm({type:"revendication",intervenant_id:coid,btn:"Envoyer la demande",msgLabel:"Votre fonction dans la société",ok:"Merci ! On vous recontacte pour vérifier et activer votre profil."}))}
 async function share(cid){
-  const c=CH.find(x=>x.id===cid);const url=location.href.split("#")[0]+"#/chantier/"+cid;
+  const c=CH.find(x=>x.id===cid);const url=shareUrl(cid);
   try{if(navigator.share){await navigator.share({title:c.nom,url});return}await navigator.clipboard.writeText(url);toast("Lien copié, prêt à partager sur LinkedIn")}
   catch(e){window.open("https://www.linkedin.com/sharing/share-offsite/?url="+encodeURIComponent(url),"_blank","noopener")}
 }
@@ -634,7 +634,7 @@ async function delCom(id){
   loadSocial(SOC.cid);
 }
 function openShare(cid){
-  const c=CH.find(x=>x.id===cid);const url=location.href.split("#")[0]+"#/chantier/"+cid;
+  const c=CH.find(x=>x.id===cid);const url=shareUrl(cid);
   const txt=`🏗️ ${c.nom} (${vNom(c.v)}) sur BTP Direct`;
   openModal(`<h2>Partager ce chantier</h2><p>${esc(c.nom)}</p>
    <div style="display:grid;gap:10px">
@@ -644,6 +644,7 @@ function openShare(cid){
    </div><p class="fine">Les personnes qui ne sont pas encore membres seront invitées à s'inscrire.</p>`);
 }
 
+const shareUrl=cid=>location.origin+"/c/"+cid;
 /* Visionneuse photos */
 let LB={list:[],i:0};
 function openLb(cid,i){const c=CH.find(x=>x.id===cid);LB={list:c.photos,i};lbShow();$("#lb").classList.add("open")}
@@ -826,6 +827,8 @@ function vAdmEdit(id,sigId){
   const srcBy=c?r.source_par:(s?(s.citer&&s.contributeur_nom?"Signalé par "+s.contributeur_nom:"Signalé par un membre de la communauté"):"");
   const srcD=c?r.source_date:(s?dateFr(s.created_at):dateFr(new Date()));
   const srcU=c?r.source_url:(s?s.source_url:"");
+  const sigMem=s&&s.user_id?(ADM.mem||[]).find(m=>m.user_id===s.user_id):null;
+  const auteur=c?(r.auteur_nom||""):(sigMem&&sigMem.nom?sigMem.nom:(s&&s.citer&&s.contributeur_nom?s.contributeur_nom:""));
   const desc=c?r.description:(s?(s.note||""):"");
   return `<div class="wrap"><div class="crumbs"><a href="#/">Accueil</a> › <a href="#/admin/chantiers">Modération</a> › ${c?"Modifier":"Nouveau chantier"}</div>
    <div class="page-h"><div><h1>${c?"Modifier le chantier":"Nouveau chantier"}</h1>${s?`<p>À partir du signalement « ${esc(s.nom)} »</p>`:""}</div>${c?`<a class="btn" href="#/chantier/${c.id}">Voir la fiche</a>`:""}</div>
@@ -869,6 +872,7 @@ function vAdmEdit(id,sigId){
      <div class="field"><label for="eSrcD">Date</label><input id="eSrcD" maxlength="60" value="${esc(srcD||"")}"></div>
      <div class="field"><label for="eSrcU">Lien <span class="hint">(facultatif)</span></label><input id="eSrcU" type="url" maxlength="1000" value="${esc(srcU||"")}" placeholder="https://"></div>
     </div>
+    <div class="field"><label for="eAut">Publié par <span class="hint">(prénom et nom affichés quand la fiche est partagée ; vide = « BTP Direct »)</span></label><input id="eAut" maxlength="120" value="${esc(auteur)}" placeholder="BTP Direct"></div>
 
     <h2>Publication</h2>
     <label class="check"><input type="checkbox" id="ePubl" ${c?(c.publie?"checked":""):"checked"}>Publier la fiche (visible du public${SITE_PUBLIC?"":", une fois le site ouvert"})</label>
@@ -931,7 +935,7 @@ async function saveCh(e){
       statut:document.querySelector('input[name="est"]:checked').value,debut:g("#eDeb"),fin:g("#eFin"),
       avancement:Math.max(0,Math.min(100,parseInt($("#eAv").value)||0)),montant:g("#eMt"),marche_public:$("#ePub").checked,
       surface:g("#eSurf"),gabarit:g("#eNiv"),description:g("#eDesc"),source_titre:g("#eSrcT"),source_par:g("#eSrcBy"),
-      source_date:g("#eSrcD"),source_url:g("#eSrcU"),photos:ED.photos,publie:$("#ePubl").checked};
+      source_date:g("#eSrcD"),source_url:g("#eSrcU"),auteur_nom:g("#eAut"),photos:ED.photos,publie:$("#ePubl").checked};
     if(row.statut==="fini"&&row.avancement<100)row.avancement=100;
     let id=ED.id;
     if(id){const {error}=await sb.from("chantiers").update(row).eq("id",id);if(error)throw error}
