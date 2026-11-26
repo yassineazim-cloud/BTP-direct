@@ -408,3 +408,8 @@ table.adm .btn{padding:6px 10px;font-size:13px}
 .com-form textarea{flex:1;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface);min-height:46px;resize:vertical}
 @media (max-width:560px){.com-form{flex-direction:column;align-items:stretch}}
 @media (min-width:901px){nav.main a.nav-sm{display:none!important}}
+
+.card-soc{display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.card-soc button{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:7px 6px;font-size:13.5px;font-weight:600;color:var(--muted)}
+.card-soc button:hover{border-color:var(--muted);color:var(--ink)}
+.card-soc button.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}

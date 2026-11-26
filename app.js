@@ -100,6 +100,15 @@ async function loadAll(){
   VILLES={};v.data.forEach(x=>VILLES[x.id]={n:x.nom,r:x.region,ll:[x.lat,x.lng],z:x.zoom,o:x.ordre});
   CO={};i.data.forEach(x=>CO[x.id]={n:x.nom,k:x.categorie,v:x.ville_id,col:x.couleur,ver:x.verifie,since:x.depuis,eff:x.effectif,d:x.description,raw:x});
   CH=c.data.map(mapChantier);
+  await loadCounts();
+}
+/* Compteurs J'aime / commentaires pour les cartes */
+let LIKES={}, NCOM={};
+async function loadCounts(){
+  LIKES={};NCOM={};
+  const [l,m]=await Promise.all([sb.from("jaimes").select("chantier_id,user_id"),sb.from("commentaires").select("chantier_id")]);
+  (l.data||[]).forEach(x=>(LIKES[x.chantier_id]=LIKES[x.chantier_id]||[]).push(x.user_id));
+  (m.data||[]).forEach(x=>NCOM[x.chantier_id]=(NCOM[x.chantier_id]||0)+1);
 }
 let MEMBRE=null;
 async function checkAdmin(){
@@ -160,11 +169,30 @@ const legend=`<div class="legend">${Object.values(STATUTS).map(s=>`<span><i styl
 const fitTo=(m,l,pad=40)=>{if(m&&l.length>1)m.fitBounds(l.map(llOf),{padding:[pad,pad],maxZoom:13})};
 
 /* ---------- Blocs communs ---------- */
-function card(c){
+function cardHome(c){return card(c,true)}
+function cardBar(c){
+  const me=SESSION&&SESSION.user.id, L=LIKES[c.id]||[], liked=me&&L.includes(me), n=NCOM[c.id]||0;
+  return `<div class="card-soc" onclick="event.preventDefault();event.stopPropagation()">
+   <button type="button" class="${liked?"on":""}" onclick="likeCard(${c.id},this)" aria-label="J'aime">${liked?"♥":"♡"} <span>${L.length||""}</span></button>
+   <button type="button" onclick="comCard(${c.id})" aria-label="Commentaires">💬 <span>${n||""}</span></button>
+   <button type="button" onclick="openShare(${c.id})" aria-label="Partager">↗ <span>Partager</span></button></div>`;
+}
+function inviteSignup(){toast("Réservé aux membres : rejoignez la communauté");location.hash=SESSION?"#/":"#/inscription"}
+async function likeCard(cid,btn){
+  if(!CAN_SIGNAL())return inviteSignup();
+  const me=SESSION.user.id, L=LIKES[cid]||[], liked=L.includes(me);
+  LIKES[cid]=liked?L.filter(x=>x!==me):[...L,me];
+  btn.className=liked?"":"on";btn.innerHTML=`${liked?"♡":"♥"} <span>${LIKES[cid].length||""}</span>`;
+  const r=liked?await sb.from("jaimes").delete().eq("chantier_id",cid).eq("user_id",me):await sb.from("jaimes").insert({chantier_id:cid,user_id:me});
+  if(r.error){toast("Erreur : "+r.error.message);await loadCounts();route()}
+}
+let GO_COM=false;
+function comCard(cid){GO_COM=true;location.hash="#/chantier/"+cid}
+function card(c,soc){
   return `<a class="card" href="#/chantier/${c.id}"><div class="thumb">${imgOr(c.photos[0],c.seed,0,c.nom)}${badge(c.st)}${isNew(c)?'<span class="new">Nouveau</span>':""}</div>
    <div class="card-b"><span class="tag" style="align-self:flex-start">${esc(c.type)}</span><h3>${esc(c.nom)}</h3>
    <div class="loc">${pin}${esc(c.q)}${c.q?", ":""}${esc(vNom(c.v))}</div>
-   <div class="card-f"><span>${c.montant!=="n.c."?"<b>"+esc(c.montant)+"</b>":"Montant n.c."}</span><span>${esc(ago(c.updated))}</span></div></div></a>`;
+   <div class="card-f"><span>${c.montant!=="n.c."?"<b>"+esc(c.montant)+"</b>":"Montant n.c."}</span><span>${esc(ago(c.updated))}</span></div>${soc?cardBar(c):""}</div></a>`;
 }
 function adSlot(side){
   return `<div class="ad ${side?"side":""}"><span class="lbl">Espace partenaire</span><div class="logo">Vous</div><div><b>Votre marque ici</b><p>Fournisseurs, fabricants, loueurs de matériel : touchez les décideurs des chantiers en cours au Maroc.</p></div><a class="btn" href="#/" onclick="openPub();return false">Annoncer ici</a></div>`;
@@ -221,9 +249,9 @@ function vHome(){
 
   <section class="blk" style="padding-top:0"><div class="wrap">
     <div class="sec-h"><div><h2>Derniers chantiers ajoutés</h2><p>Vérifiés par l'équipe avant publication.</p></div><a class="more" href="#/chantiers">Tous les chantiers →</a></div>
-    ${latest.length?`<div class="grid">${latest.slice(0,4).map(card).join("")}</div>
+    ${latest.length?`<div class="grid">${latest.slice(0,4).map(cardHome).join("")}</div>
     <div style="margin:22px 0">${adSlot()}</div>
-    ${latest.length>4?`<div class="grid">${latest.slice(4,8).map(card).join("")}</div>`:""}`:emptyBox("Les premiers chantiers arrivent très bientôt.")}
+    ${latest.length>4?`<div class="grid">${latest.slice(4,8).map(cardHome).join("")}</div>`:""}`:emptyBox("Les premiers chantiers arrivent très bientôt.")}
   </div></section>
 
   <section class="blk" style="padding-top:0"><div class="wrap">
@@ -570,7 +598,9 @@ async function loadSocial(cid){
     sb.from("commentaires").select("*").eq("chantier_id",cid).order("created_at",{ascending:true})
   ]);
   SOC={cid,likes:(l.data||[]).map(x=>x.user_id),coms:c.data||[]};
+  LIKES[cid]=[...SOC.likes];NCOM[cid]=SOC.coms.length;
   drawSocial();
+  if(GO_COM){GO_COM=false;const el=$("#social");if(el)setTimeout(()=>el.scrollIntoView({behavior:"smooth",block:"start"}),150)}
 }
 function drawSocial(){
   const el=$("#social"); if(!el||+el.dataset.cid!==SOC.cid)return;
